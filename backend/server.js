@@ -1,6 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const uuid = require('uuid/v4');
+const dotenv = require('dotenv');
+const morgan = require('morgan');
+const colors  = require('colors');
+
+/**Render config File */
+dotenv.config({path:'./config/config.env'});
 
 const app = express();
 
@@ -48,4 +54,13 @@ app.post('/product', (req, res, next) => {
     .json({ message: 'Created new product.', product: createdProduct });
 });
 
-app.listen(5000); // start Node + Express server on port 5000
+const PORT = process.env.PORT || 5000;
+
+const server =  app.listen(PORT, console.log(`server is runing ${process.env.NODE_ENV} mode on port ${PORT}`.bgWhite.black));
+
+//Handle rejection 
+
+process.on('unhandledRejection', (err,promise) => {
+    console.log(`Error : ${err.message}`);
+    server.close( () => process.exit(1));
+})
